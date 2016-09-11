@@ -1,5 +1,6 @@
 module BetaReductor
   ( Lambda(..)
+  , alphaEquiv
   , reduct
   ) where
 
@@ -8,6 +9,12 @@ import qualified Data.List as L
 import qualified Data.Set as S
 
 data Lambda = Var String | Lambda String Lambda | Apply Lambda Lambda deriving (Eq, Show)
+
+alphaEquiv :: Lambda -> Lambda -> Bool
+alphaEquiv (Var s1) (Var s2) = s1 == s2
+alphaEquiv (Apply e1 e2) (Apply e3 e4) = (e1 `alphaEquiv` e3) && (e2 `alphaEquiv` e4)
+alphaEquiv l1@(Lambda s1 e1) l2@(Lambda s2 e2) = (freeVariables l1 == freeVariables l2) && (e1 `alphaEquiv` apply e2 s2 (Var s1))
+alphaEquiv _ _ = False
 
 freeVariables :: Lambda -> S.Set String
 freeVariables (Var s) = S.singleton s
@@ -22,14 +29,14 @@ newVariable useds base = let candidates = iterate (++ "'") base
                          in (\(Just x) -> x) $ L.find (`S.notMember` useds) candidates
 
 apply :: Lambda -> String -> Lambda -> Lambda
-apply e s1 (Var s2) | s1 == s2  = e
-                    | otherwise = Var s2
-apply e1 s1 (Lambda s2 e2) = let s2' = newVariable (freeVariables2 e2 e1) s2
-                             in Lambda s2' $ apply e1 s1 (apply (Var s2') s2 e2)
-apply e1 s (Apply e2 e3) = Apply (apply e1 s e2) (apply e1 s e3)
+apply (Var s1) s2 e | s1 == s2  = e
+                    | otherwise = Var s1
+apply (Lambda s1 e1) s2 e2 = let s1' = newVariable (freeVariables2 e1 e2) s1
+                             in Lambda s1' $ apply (apply e1 s1 (Var s1')) s2 e2
+apply (Apply e1 e2) s e3 = Apply (apply e1 s e3) (apply e2 s e3)
 
 reduct :: Lambda -> Maybe Lambda
 reduct (Var _) = Nothing
 reduct (Lambda s e) = Lambda s <$> reduct e
-reduct (Apply (Lambda s e1) e2) = Just $ apply e2 s e1
+reduct (Apply (Lambda s e1) e2) = Just $ apply e1 s e2
 reduct (Apply e1 e2) = ((`Apply` e2) <$> reduct e1) <|> (Apply e1 <$> reduct e2)
