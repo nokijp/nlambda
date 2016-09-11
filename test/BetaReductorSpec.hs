@@ -26,6 +26,7 @@ spec = do
           , (Apply (Lambda "y" (Lambda "x" (Apply (Var "x'") (Var "y")))) (Var "x"), Lambda "x''" (Apply (Var "x'") (Var "x")))  -- (\y. \x. x' y) x -> \x''. x' x
           , (Apply (Lambda "y" (Lambda "x'" (Apply (Var "x'") (Var "y")))) (Var "x"), Lambda "x''" (Apply (Var "x''") (Var "x")))  -- (\y. \x'. x' y) x -> \x''. x'' x
           , (Apply (Lambda "x'" (Lambda "x" (Apply (Var "x''") (Var "x'")))) (Var "x"), Lambda "x'''" (Apply (Var "x''") (Var "x")))  -- (\x'. \x. x'' x') x -> \x'''. x'' x
+          , (Apply (Lambda "x" (Apply (Var "x") (Var "x"))) (Lambda "x" (Apply (Var "x") (Var "x"))), Apply (Lambda "x" (Apply (Var "x") (Var "x"))) (Lambda "x" (Apply (Var "x") (Var "x"))))  -- (\x. x x) (\x. x x) -> (\x. x x) (\x. x x)
           ] $ \(expression, result) -> it ("reducts " ++ show expression) $ reduct expression `shouldBe` Just result
 
     forM_ [ Var "x"  -- x
@@ -33,6 +34,34 @@ spec = do
           , Lambda "x" (Var "y")  -- \x. y
           , Apply (Var "x") (Var "x")  -- x x
           ] $ \expression -> it ("can't reduct " ++ show expression) $ reduct expression `shouldBe` Nothing
+
+
+  describe "reducts" $ do
+    forM_ [ ( Var "x"  -- x
+            , []
+            )
+          , ( Apply (Lambda "x" (Var "x")) (Var "x")  -- (\x. x) x
+            , [Var "x"]  -- -> x
+            )
+          , ( Apply (Apply (Lambda "x" (Var "x")) (Var "x")) (Var "x")  -- (\x. x) x x
+            , [Apply (Var "x") (Var "x")]  -- -> x x
+            )
+          , ( Apply (Apply (Lambda "x" (Lambda "x" (Var "x"))) (Var "a")) (Var "b")  -- (\x. (\x. x)) a b
+            , [Apply (Lambda "x'" (Var "x'")) (Var "b"), Var "b"]  -- -> (\x. x) b -> b
+            )
+          , ( Apply (Lambda "x" (Var "y")) (Apply (Lambda "x" (Apply (Var "x") (Var "x"))) (Lambda "x" (Apply (Var "x") (Var "x"))))  -- (\x. y) (\x. x x) (\x. x x)
+            , [Var "y"]  -- -> y
+            )
+          ] $ \(expression, sequence) -> it ("returns a reduction sequence when given" ++ show expression) $ reducts expression `shouldBe` sequence
+
+    forM_ [ ( Apply (Lambda "x" (Apply (Var "x") (Var "x"))) (Lambda "x" (Apply (Var "x") (Var "x")))  -- (\x. x x) (\x. x x)
+            , [ Apply (Lambda "x" (Apply (Var "x") (Var "x"))) (Lambda "x" (Apply (Var "x") (Var "x")))  -- -> (\x. x x) (\x. x x) -> ...
+              , Apply (Lambda "x" (Apply (Var "x") (Var "x"))) (Lambda "x" (Apply (Var "x") (Var "x")))  -- -> (\x. x x) (\x. x x) -> ...
+              , Apply (Lambda "x" (Apply (Var "x") (Var "x"))) (Lambda "x" (Apply (Var "x") (Var "x")))  -- -> (\x. x x) (\x. x x) -> ...
+              ]
+            )
+          ] $ \(expression, sequenceHead) -> it ("returns an infinite reduction sequence when given" ++ show expression) $ take (length sequenceHead) (reducts expression) `shouldBe` sequenceHead
+
 
   describe "alphaEquiv" $ do
     forM_ [ (Var "x", Var "x")  -- x = x

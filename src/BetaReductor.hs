@@ -2,6 +2,7 @@ module BetaReductor
   ( Lambda(..)
   , alphaEquiv
   , reduct
+  , reducts
   ) where
 
 import Control.Applicative
@@ -10,19 +11,23 @@ import qualified Data.Set as S
 
 data Lambda = Var String | Lambda String Lambda | Apply Lambda Lambda deriving (Eq, Show)
 
--- evaluates alpha-equivalence between two lambda expressions
-alphaEquiv :: Lambda -> Lambda -> Bool
-alphaEquiv (Var s1) (Var s2) = s1 == s2
-alphaEquiv (Apply e1 e2) (Apply e3 e4) = (e1 `alphaEquiv` e3) && (e2 `alphaEquiv` e4)
-alphaEquiv l1@(Lambda s1 e1) l2@(Lambda s2 e2) = (freeVariables l1 == freeVariables l2) && (e1 `alphaEquiv` apply e2 s2 (Var s1))
-alphaEquiv _ _ = False
-
 -- reduces a lambda expression step-by-step
 reduct :: Lambda -> Maybe Lambda
 reduct (Var _) = Nothing
 reduct (Lambda s e) = Lambda s <$> reduct e
 reduct (Apply (Lambda s e1) e2) = Just $ apply e1 s e2
 reduct (Apply e1 e2) = ((`Apply` e2) <$> reduct e1) <|> (Apply e1 <$> reduct e2)
+
+-- returns a reduction sequence
+reducts :: Lambda -> [Lambda]
+reducts e = maybe [] (\e -> e : reducts e) (reduct e)
+
+-- evaluates alpha-equivalence between two lambda expressions
+alphaEquiv :: Lambda -> Lambda -> Bool
+alphaEquiv (Var s1) (Var s2) = s1 == s2
+alphaEquiv (Apply e1 e2) (Apply e3 e4) = (e1 `alphaEquiv` e3) && (e2 `alphaEquiv` e4)
+alphaEquiv l1@(Lambda s1 e1) l2@(Lambda s2 e2) = (freeVariables l1 == freeVariables l2) && (e1 `alphaEquiv` apply e2 s2 (Var s1))
+alphaEquiv _ _ = False
 
 ----------------------------------------------------------------
 -- internal utilities
