@@ -7,6 +7,7 @@ library
   hs-source-dirs:      src
   exposed-modules:     BetaReductor
   build-depends:       base >= 4.7 && < 5
+                     , containers == 0.5.*
   ghc-options:         -Wall -O
   default-language:    Haskell2010
 
