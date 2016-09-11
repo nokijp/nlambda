@@ -21,15 +21,15 @@ newVariable :: S.Set String -> String -> String
 newVariable useds base = let candidates = iterate (++ "'") base
                          in (\(Just x) -> x) $ L.find (`S.notMember` useds) candidates
 
-apply :: String -> Lambda -> Lambda -> Lambda
-apply s1 (Var s2) e | s1 == s2  = e
+apply :: Lambda -> String -> Lambda -> Lambda
+apply e s1 (Var s2) | s1 == s2  = e
                     | otherwise = Var s2
-apply s1 (Lambda s2 e1) e2 = let s2' = newVariable (freeVariables2 e1 e2) s2
-                             in Lambda s2' $ apply s1 (apply s2 e1 (Var s2')) e2
-apply s (Apply e1 e2) e3 = Apply (apply s e1 e3) (apply s e2 e3)
+apply e1 s1 (Lambda s2 e2) = let s2' = newVariable (freeVariables2 e2 e1) s2
+                             in Lambda s2' $ apply e1 s1 (apply (Var s2') s2 e2)
+apply e1 s (Apply e2 e3) = Apply (apply e1 s e2) (apply e1 s e3)
 
 reduct :: Lambda -> Maybe Lambda
 reduct (Var _) = Nothing
 reduct (Lambda s e) = Lambda s <$> reduct e
-reduct (Apply (Lambda s e1) e2) = Just $ apply s e1 e2
+reduct (Apply (Lambda s e1) e2) = Just $ apply e2 s e1
 reduct (Apply e1 e2) = ((`Apply` e2) <$> reduct e1) <|> (Apply e1 <$> reduct e2)
