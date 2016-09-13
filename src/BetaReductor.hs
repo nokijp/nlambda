@@ -20,7 +20,7 @@ reduct (Apply e1 e2) = ((`Apply` e2) <$> reduct e1) <|> (Apply e1 <$> reduct e2)
 
 -- returns a reduction sequence
 reducts :: Lambda -> [Lambda]
-reducts e = maybe [] (\e -> e : reducts e) (reduct e)
+reducts = maybe [] (\e -> e : reducts e) . reduct
 
 -- evaluates alpha-equivalence between two lambda expressions
 alphaEquiv :: Lambda -> Lambda -> Bool
