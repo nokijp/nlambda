@@ -24,6 +24,7 @@ spec = do
           , ("\\x . x", Lambda "x" (Var "x"))
           , ("\\x -> x", Lambda "x" (Var "x"))
           , ("λ x. x", Lambda "x" (Var "x"))
+          , ("\\x y. x y", Lambda "x" (Lambda "y" (Apply (Var "x") (Var "y"))))
           , ("(x)", Var "x")
           , ("(a b)", Apply (Var "a") (Var "b"))
           , ("( a b )", Apply (Var "a") (Var "b"))
