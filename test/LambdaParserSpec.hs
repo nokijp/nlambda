@@ -5,8 +5,9 @@ module LambdaParserSpec
 
 import Test.Hspec
 
+import Lambda
 import LambdaParser
-import BetaReductor
+
 import Control.Monad
 import Text.Parsec
 

@@ -2,7 +2,8 @@ module LambdaParser
   ( lambdaParser
   ) where
 
-import BetaReductor
+import Lambda
+
 import Data.Char
 import Text.Parsec
 import Text.Parsec.String

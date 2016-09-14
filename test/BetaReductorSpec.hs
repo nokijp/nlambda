@@ -5,8 +5,10 @@ module BetaReductorSpec
 
 import Test.Hspec
 
+import Lambda
 import BetaReductor
-import Control.Monad
+
+import Control.Monad (forM_)
 
 main :: IO ()
 main = hspec spec
@@ -52,7 +54,7 @@ spec = do
           , ( Apply (Lambda "x" (Var "y")) (Apply (Lambda "x" (Apply (Var "x") (Var "x"))) (Lambda "x" (Apply (Var "x") (Var "x"))))  -- (\x. y) (\x. x x) (\x. x x)
             , [Var "y"]  -- -> y
             )
-          ] $ \(expression, sequence) -> it ("returns a reduction sequence when given " ++ show expression) $ reducts expression `shouldBe` sequence
+          ] $ \(expression, steps) -> it ("returns a reduction sequence when given " ++ show expression) $ reducts expression `shouldBe` steps
 
     forM_ [ ( Apply (Lambda "x" (Apply (Var "x") (Var "x"))) (Lambda "x" (Apply (Var "x") (Var "x")))  -- (\x. x x) (\x. x x)
             , [ Apply (Lambda "x" (Apply (Var "x") (Var "x"))) (Lambda "x" (Apply (Var "x") (Var "x")))  -- -> (\x. x x) (\x. x x) -> ...
@@ -60,7 +62,7 @@ spec = do
               , Apply (Lambda "x" (Apply (Var "x") (Var "x"))) (Lambda "x" (Apply (Var "x") (Var "x")))  -- -> (\x. x x) (\x. x x) -> ...
               ]
             )
-          ] $ \(expression, sequenceHead) -> it ("returns an infinite reduction sequence when given " ++ show expression) $ take (length sequenceHead) (reducts expression) `shouldBe` sequenceHead
+          ] $ \(expression, stepsHead) -> it ("returns an infinite reduction sequence when given " ++ show expression) $ take (length stepsHead) (reducts expression) `shouldBe` stepsHead
 
 
   describe "alphaEquiv" $ do

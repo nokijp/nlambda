@@ -1,15 +1,14 @@
 module BetaReductor
-  ( Lambda(..)
-  , alphaEquiv
+  ( alphaEquiv
   , reduct
   , reducts
   ) where
 
+import Lambda
+
 import Control.Applicative
 import qualified Data.List as L
 import qualified Data.Set as S
-
-data Lambda = Var String | Lambda String Lambda | Apply Lambda Lambda deriving (Eq, Show)
 
 -- reduces a lambda expression step-by-step
 reduct :: Lambda -> Maybe Lambda

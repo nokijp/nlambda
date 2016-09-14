@@ -5,7 +5,8 @@ cabal-version:       >=1.10
 
 library
   hs-source-dirs:      src
-  exposed-modules:     BetaReductor
+  exposed-modules:     Lambda
+                     , BetaReductor
                      , LambdaParser
   build-depends:       base >= 4.7 && < 5
                      , containers == 0.5.*
@@ -17,6 +18,8 @@ test-suite betareductor-test
   type:                exitcode-stdio-1.0
   hs-source-dirs:      test
   main-is:             Spec.hs
+  other-modules:       BetaReductorSpec
+                     , LambdaParserSpec
   build-depends:       base >= 4.7 && < 5
                      , hspec == 2.*
                      , betareductor
