@@ -18,7 +18,8 @@ test-suite betareductor-test
   type:                exitcode-stdio-1.0
   hs-source-dirs:      test
   main-is:             Spec.hs
-  other-modules:       BetaReductorSpec
+  other-modules:       LambdaSpec
+                     , BetaReductorSpec
                      , LambdaParserSpec
   build-depends:       base >= 4.7 && < 5
                      , hspec == 2.*
