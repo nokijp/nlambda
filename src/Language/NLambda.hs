@@ -1,4 +1,4 @@
-module Lambda
+module Language.NLambda
   ( Lambda(..)
   , lambdaString
   ) where

@@ -1,8 +1,8 @@
-module LambdaParser
+module Language.NLambda.Parser
   ( lambdaParser
   ) where
 
-import Lambda
+import Language.NLambda
 
 import Data.Char
 import Text.Parsec

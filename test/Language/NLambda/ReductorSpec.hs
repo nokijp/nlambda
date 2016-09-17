@@ -1,12 +1,12 @@
-module BetaReductorSpec
+module Language.NLambda.ReductorSpec
   ( main
   , spec
   ) where
 
 import Test.Hspec
 
-import Lambda
-import BetaReductor
+import Language.NLambda
+import Language.NLambda.Reductor
 
 import Control.Monad (forM_)
 

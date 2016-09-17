@@ -5,9 +5,9 @@ cabal-version:       >=1.10
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Lambda
-                     , BetaReductor
-                     , LambdaParser
+  exposed-modules:     Language.NLambda
+                     , Language.NLambda.Reductor
+                     , Language.NLambda.Parser
   build-depends:       base >= 4.7 && < 5
                      , containers == 0.5.*
                      , parsec == 3.*
@@ -18,9 +18,9 @@ test-suite betareductor-test
   type:                exitcode-stdio-1.0
   hs-source-dirs:      test
   main-is:             Spec.hs
-  other-modules:       LambdaSpec
-                     , BetaReductorSpec
-                     , LambdaParserSpec
+  other-modules:       Language.NLambdaSpec
+                     , Language.NLambda.ReductorSpec
+                     , Language.NLambda.ParserSpec
   build-depends:       base >= 4.7 && < 5
                      , hspec == 2.*
                      , betareductor

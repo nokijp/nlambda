@@ -1,10 +1,10 @@
-module BetaReductor
+module Language.NLambda.Reductor
   ( alphaEquiv
   , reduct
   , reducts
   ) where
 
-import Lambda
+import Language.NLambda
 
 import Control.Applicative
 import qualified Data.List as L

@@ -1,12 +1,12 @@
-module LambdaParserSpec
+module Language.NLambda.ParserSpec
   ( main
   , spec
   ) where
 
 import Test.Hspec
 
-import Lambda
-import LambdaParser
+import Language.NLambda
+import Language.NLambda.Parser
 
 import Control.Monad
 import Text.Parsec

@@ -1,11 +1,11 @@
-module LambdaSpec
+module Language.NLambdaSpec
   ( main
   , spec
   ) where
 
 import Test.Hspec
 
-import Lambda
+import Language.NLambda
 
 import Control.Monad
 
