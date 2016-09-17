@@ -1,9 +1,13 @@
 module Language.NLambda
   ( Lambda(..)
+  , (<>)
   , lambdaString
   ) where
 
 data Lambda = Var String | Lambda String Lambda | Apply Lambda Lambda deriving (Eq, Show)
+
+(<>) :: Lambda -> Lambda -> Lambda
+(<>) = Apply
 
 -- converts a Lambda to a readable string
 lambdaString :: Lambda -> String
