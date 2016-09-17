@@ -15,7 +15,7 @@ main = hspec spec
 
 spec :: Spec
 spec = do
-  describe "reduct" $ do
+  describe "reduce" $ do
     forM_
       [ (Apply (Lambda "x" (Var "x")) (Var "x"), Var "x")  -- (\x. x) x -> x
       , (Apply (Lambda "x" (Var "y")) (Var "x"), Var "y")  -- (\x. y) x -> y
@@ -37,7 +37,7 @@ spec = do
       , (Apply (Lambda "x'" (Lambda "x" (Apply (Var "x''") (Var "x'")))) (Var "x"), Lambda "x'''" (Apply (Var "x''") (Var "x")))  -- (\x'. \x. x'' x') x -> \x'''. x'' x
       , (Apply (Lambda "x" (Apply (Var "x") (Var "x"))) (Lambda "x" (Apply (Var "x") (Var "x"))), Apply (Lambda "x" (Apply (Var "x") (Var "x"))) (Lambda "x" (Apply (Var "x") (Var "x"))))  -- (\x. x x) (\x. x x) -> (\x. x x) (\x. x x)
       ] $ \(expression, result) ->
-        it ("reducts " ++ show expression) $ reduct expression `shouldBe` Just result
+        it ("reduces " ++ show expression) $ reduce expression `shouldBe` Just result
 
     forM_
       [ Var "x"  -- x
@@ -45,10 +45,10 @@ spec = do
       , Lambda "x" (Var "y")  -- \x. y
       , Apply (Var "x") (Var "x")  -- x x
       ] $ \expression ->
-        it ("can't reduct " ++ show expression) $ reduct expression `shouldBe` Nothing
+        it ("can't reduce " ++ show expression) $ reduce expression `shouldBe` Nothing
 
 
-  describe "reducts" $ do
+  describe "reduces" $ do
     forM_
       [ ( Var "x"  -- x
         , []
@@ -66,7 +66,7 @@ spec = do
         , [Var "y"]  -- -> y
         )
       ] $ \(expression, steps) ->
-        it ("returns a reduction sequence when given " ++ show expression) $ reducts expression `shouldBe` steps
+        it ("returns a reduction sequence when given " ++ show expression) $ reduces expression `shouldBe` steps
 
     forM_
       [ ( Apply (Lambda "x" (Apply (Var "x") (Var "x"))) (Lambda "x" (Apply (Var "x") (Var "x")))  -- (\x. x x) (\x. x x)
@@ -76,7 +76,7 @@ spec = do
           ]
         )
       ] $ \(expression, stepsHead) ->
-        it ("returns an infinite reduction sequence when given " ++ show expression) $ take (length stepsHead) (reducts expression) `shouldBe` stepsHead
+        it ("returns an infinite reduction sequence when given " ++ show expression) $ take (length stepsHead) (reduces expression) `shouldBe` stepsHead
 
 
   describe "alphaEquiv" $ do

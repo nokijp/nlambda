@@ -1,7 +1,7 @@
 module Language.NLambda.Reductor
   ( alphaEquiv
-  , reduct
-  , reducts
+  , reduce
+  , reduces
   ) where
 
 import Language.NLambda
@@ -11,15 +11,15 @@ import qualified Data.List as L
 import qualified Data.Set as S
 
 -- reduces a lambda expression step-by-step
-reduct :: Lambda -> Maybe Lambda
-reduct (Var _)                  = Nothing
-reduct (Lambda s e)             = Lambda s <$> reduct e
-reduct (Apply (Lambda s e1) e2) = Just $ apply e1 s e2
-reduct (Apply e1 e2)            = ((`Apply` e2) <$> reduct e1) <|> (Apply e1 <$> reduct e2)
+reduce :: Lambda -> Maybe Lambda
+reduce (Var _)                  = Nothing
+reduce (Lambda s e)             = Lambda s <$> reduce e
+reduce (Apply (Lambda s e1) e2) = Just $ apply e1 s e2
+reduce (Apply e1 e2)            = ((`Apply` e2) <$> reduce e1) <|> (Apply e1 <$> reduce e2)
 
 -- returns a reduction sequence
-reducts :: Lambda -> [Lambda]
-reducts = maybe [] (\e -> e : reducts e) . reduct
+reduces :: Lambda -> [Lambda]
+reduces = maybe [] (\e -> e : reduces e) . reduce
 
 -- evaluates alpha-equivalence between two lambda expressions
 alphaEquiv :: Lambda -> Lambda -> Bool
