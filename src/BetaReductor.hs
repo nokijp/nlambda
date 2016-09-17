@@ -36,10 +36,7 @@ alphaEquiv _ _ = False
 freeVariables :: Lambda -> S.Set String
 freeVariables (Var s) = S.singleton s
 freeVariables (Lambda s e) = S.delete s $ freeVariables e
-freeVariables (Apply e1 e2) = freeVariables2 e1 e2
-
-freeVariables2 :: Lambda -> Lambda -> S.Set String
-freeVariables2 e1 e2 = freeVariables e1 `S.union` freeVariables e2
+freeVariables (Apply e1 e2) = freeVariables e1 `S.union` freeVariables e2
 
 -- generates a new variable name which is not duplicated with used ones
 newVariable :: S.Set String -> String -> String
@@ -50,6 +47,7 @@ newVariable useds base = let candidates = iterate (++ "'") base
 apply :: Lambda -> String -> Lambda -> Lambda
 apply (Var s1) s2 e | s1 == s2  = e
                     | otherwise = Var s1
-apply (Lambda s1 e1) s2 e2 = let s1' = newVariable (freeVariables2 e1 e2) s1
-                             in Lambda s1' $ apply (apply e1 s1 (Var s1')) s2 e2
+apply l@(Lambda s1 e1) s2 e2 | s1 == s2  = l
+                             | otherwise = let s1' = newVariable (S.delete s1 (freeVariables e1) `S.union` freeVariables e2) s1
+                                           in Lambda s1' $ apply (apply e1 s1 (Var s1')) s2 e2
 apply (Apply e1 e2) s e3 = Apply (apply e1 s e3) (apply e2 s e3)
