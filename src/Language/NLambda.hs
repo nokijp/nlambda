@@ -4,7 +4,7 @@ module Language.NLambda
   , lambdaString
   ) where
 
-data Lambda = Var String | Lambda String Lambda | Apply Lambda Lambda deriving (Eq, Show)
+data Lambda = Var !String | Lambda !String Lambda | Apply Lambda Lambda deriving (Eq, Show)
 
 (<>) :: Lambda -> Lambda -> Lambda
 (<>) = Apply
