@@ -7,7 +7,7 @@ import Test.Hspec
 
 import Language.NLambda
 
-import Control.Monad
+import Control.Monad (forM_)
 
 main :: IO ()
 main = hspec spec

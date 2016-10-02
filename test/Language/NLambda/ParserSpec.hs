@@ -8,7 +8,7 @@ import Test.Hspec
 import Language.NLambda
 import Language.NLambda.Parser
 
-import Control.Monad
+import Control.Monad (forM_)
 import Text.Parsec
 
 main :: IO ()

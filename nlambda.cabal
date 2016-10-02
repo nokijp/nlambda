@@ -6,8 +6,9 @@ cabal-version:       >=1.10
 library
   hs-source-dirs:      src
   exposed-modules:     Language.NLambda
-                     , Language.NLambda.Reductor
                      , Language.NLambda.Parser
+                     , Language.NLambda.Reductor
+                     , Language.NLambda.Interpreter
   build-depends:       base >= 4.7 && < 5
                      , containers == 0.5.*
                      , parsec == 3.*
@@ -19,8 +20,9 @@ test-suite nlambda-test
   hs-source-dirs:      test
   main-is:             Spec.hs
   other-modules:       Language.NLambdaSpec
-                     , Language.NLambda.ReductorSpec
                      , Language.NLambda.ParserSpec
+                     , Language.NLambda.ReductorSpec
+                     , Language.NLambda.InterpreterSpec
   build-depends:       base >= 4.7 && < 5
                      , hspec == 2.*
                      , nlambda
