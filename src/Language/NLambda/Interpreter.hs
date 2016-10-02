@@ -3,15 +3,17 @@ module Language.NLambda.Interpreter
   , InterpretError(..)
   , steps
   , runLambda
+  , runLambdaWithTimeLimit
   ) where
 
 import Language.NLambda
 import Language.NLambda.Reductor
 
+import System.Timeout (timeout)
 import Data.List (unfoldr)
 
 data Step = Step Lambda | Result Lambda | Loop Lambda | Error InterpretError deriving (Show, Eq)
-data InterpretError = Complicated deriving (Show, Eq)
+data InterpretError = Complicated | TimeOut deriving (Show, Eq)
 
 -- returns the beta-reduction sequence
 steps :: Int -> Lambda -> [Step]
@@ -23,6 +25,12 @@ runLambda maxSteps maxSize e =
   case last $ take maxSteps $ steps maxSize e of
     Step _ -> Error Complicated
     s      -> s
+
+-- solces a lambda expression with a time limit
+runLambdaWithTimeLimit :: Int -> Int -> Int -> Lambda -> IO Step
+runLambdaWithTimeLimit timelimitInMicros maxSteps maxSize e = do
+  stepsMaybe <- timeout timelimitInMicros $ return $! runLambda maxSteps maxSize e
+  return $ maybe (Error TimeOut) id stepsMaybe
 
 ----------------------------------------------------------------
 -- internal utilities
