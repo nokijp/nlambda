@@ -17,25 +17,37 @@ spec :: Spec
 spec = do
   describe "steps" $ do
     forM_
-      [ ( Var "a"
-        , 10
+      [ ( 10
+        , Var "a"
         , [Result $ Var "a"]
         )
-      , ( Var "a"
-        , 0
+      , ( 0
+        , Var "a"
         , [Error Complicated]
         )
-      , ( Lambda "x" (Var "x") <> Var "a"
-        , 10
+      , ( 10
+        , Lambda "x" (Var "x") <> Var "a"
         , [Step $ Lambda "x" (Var "x") <> Var "a", Result $ Var "a"]
         )
-      , ( Lambda "x" (Var "x" <> Var "x") <> Lambda "x" (Var "x" <> Var "x")
-        , 10
+      , ( 10
+        , Lambda "x" (Var "x" <> Var "x") <> Lambda "x" (Var "x" <> Var "x")
         , [Loop $ Lambda "x" (Var "x" <> Var "x") <> Lambda "x" (Var "x" <> Var "x")]
         )
-      , ( Lambda "x" (Var "x" <> Var "x" <> Var "x") <> Lambda "x" (Var "x" <> Var "x" <> Var "x")
-        , 10
+      , ( 10
+        , Lambda "x" (Var "x" <> Var "x" <> Var "x") <> Lambda "x" (Var "x" <> Var "x" <> Var "x")
         , [Step $ Lambda "x" (Var "x" <> Var "x" <> Var "x") <> Lambda "x" (Var "x" <> Var "x" <> Var "x"), Error Complicated]
         )
-      ] $ \(e, maxSize, result) ->
-        it ("returns reduction steps when given " ++ show e) $ steps maxSize e `shouldBe` result
+      ] $ \(maxSize, e, result) ->
+        it ("returns " ++ show result ++ " when given " ++ show e) $ steps maxSize e `shouldBe` result
+
+  describe "runLambda" $ do
+    forM_
+      [ (10, 10, Var "a", Result $ Var "a")
+      , (10, 0, Var "a", Error Complicated)
+      , (10, 10, Lambda "x" (Var "x") <> Var "a", Result $ Var "a")
+      , (10, 1, Lambda "x" (Var "x") <> Var "a", Error Complicated)
+      , (10, 10, Lambda "x" (Var "x" <> Var "x") <> Lambda "x" (Var "x" <> Var "x"), Loop $ Lambda "x" (Var "x" <> Var "x") <> Lambda "x" (Var "x" <> Var "x"))
+      , (10, 10, Lambda "x" (Var "x" <> Var "x" <> Var "x") <> Lambda "x" (Var "x" <> Var "x" <> Var "x"), Error Complicated)
+      , (100, 2, Lambda "x" (Var "x" <> Var "x" <> Var "x") <> Lambda "x" (Var "x" <> Var "x" <> Var "x"), Error Complicated)
+      ] $ \(maxSteps, maxSize, e, result) ->
+        it ("returns " ++ show result ++ " when given " ++ show e) $ runLambda maxSteps maxSize e `shouldBe` result

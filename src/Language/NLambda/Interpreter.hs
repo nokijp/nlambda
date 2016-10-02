@@ -2,6 +2,7 @@ module Language.NLambda.Interpreter
   ( Step(..)
   , InterpretError(..)
   , steps
+  , runLambda
   ) where
 
 import Language.NLambda
@@ -15,6 +16,13 @@ data InterpretError = Complicated deriving (Show, Eq)
 -- returns the beta-reduction sequence
 steps :: Int -> Lambda -> [Step]
 steps maxSize = unfoldr (step maxSize <$>) . Just
+
+-- solves a lambda expression
+runLambda :: Int -> Int -> Lambda -> Step
+runLambda maxSteps maxSize e =
+  case last $ take maxSteps $ steps maxSize e of
+    Step _ -> Error Complicated
+    s      -> s
 
 ----------------------------------------------------------------
 -- internal utilities
