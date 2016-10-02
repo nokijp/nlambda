@@ -1,7 +1,6 @@
 module Language.NLambda.Reductor
   ( alphaEquiv
   , reduce
-  , reduces
   ) where
 
 import Language.NLambda
@@ -16,10 +15,6 @@ reduce (Var _)                  = Nothing
 reduce (Lambda s e)             = Lambda s <$> reduce e
 reduce (Apply (Lambda s e1) e2) = Just $ apply e1 s e2
 reduce (Apply e1 e2)            = ((<> e2) <$> reduce e1) <|> ((e1 <>) <$> reduce e2)
-
--- returns a reduction sequence
-reduces :: Lambda -> [Lambda]
-reduces = maybe [] (\e -> e : reduces e) . reduce
 
 -- evaluates alpha-equivalence between two lambda expressions
 alphaEquiv :: Lambda -> Lambda -> Bool

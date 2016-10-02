@@ -48,37 +48,6 @@ spec = do
         it ("can't reduce " ++ show expression) $ reduce expression `shouldBe` Nothing
 
 
-  describe "reduces" $ do
-    forM_
-      [ ( Var "x"  -- x
-        , []
-        )
-      , ( Lambda "x" (Var "x") <> Var "x"  -- (\x. x) x
-        , [Var "x"]  -- -> x
-        )
-      , ( Lambda "x" (Var "x") <> Var "x" <> Var "x"  -- (\x. x) x x
-        , [Var "x" <> Var "x"]  -- -> x x
-        )
-      , ( Lambda "x" (Lambda "x" (Var "x")) <> Var "a" <> Var "b"  -- (\x. (\x. x)) a b
-        , [Lambda "x" (Var "x") <> Var "b", Var "b"]  -- -> (\x. x) b -> b
-        )
-      , ( Lambda "x" (Var "y") <> (Lambda "x" (Var "x" <> Var "x") <> Lambda "x" (Var "x" <> Var "x"))  -- (\x. y) ((\x. x x) (\x. x x))
-        , [Var "y"]  -- -> y
-        )
-      ] $ \(expression, steps) ->
-        it ("returns a reduction sequence when given " ++ show expression) $ reduces expression `shouldBe` steps
-
-    forM_
-      [ ( Lambda "x" (Var "x" <> Var "x") <> Lambda "x" (Var "x" <> Var "x")  -- (\x. x x) (\x. x x)
-        , [ Lambda "x" (Var "x" <> Var "x") <> Lambda "x" (Var "x" <> Var "x")  -- -> (\x. x x) (\x. x x)
-          , Lambda "x" (Var "x" <> Var "x") <> Lambda "x" (Var "x" <> Var "x")  -- -> (\x. x x) (\x. x x)
-          , Lambda "x" (Var "x" <> Var "x") <> Lambda "x" (Var "x" <> Var "x")  -- -> (\x. x x) (\x. x x)
-          ]
-        )
-      ] $ \(expression, stepsHead) ->
-        it ("returns an infinite reduction sequence when given " ++ show expression) $ take (length stepsHead) (reduces expression) `shouldBe` stepsHead
-
-
   describe "alphaEquiv" $ do
     forM_
       [ (Var "x", Var "x")  -- x = x
