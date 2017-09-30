@@ -26,16 +26,16 @@ spec = do
         , [Error Complicated]
         )
       , ( 10
-        , Lambda "x" (Var "x") <> Var "a"
-        , [Step $ Lambda "x" (Var "x") <> Var "a", Result $ Var "a"]
+        , Lambda "x" (Var "x") >-> Var "a"
+        , [Step $ Lambda "x" (Var "x") >-> Var "a", Result $ Var "a"]
         )
       , ( 10
-        , Lambda "x" (Var "x" <> Var "x") <> Lambda "x" (Var "x" <> Var "x")
-        , [Loop $ Lambda "x" (Var "x" <> Var "x") <> Lambda "x" (Var "x" <> Var "x")]
+        , Lambda "x" (Var "x" >-> Var "x") >-> Lambda "x" (Var "x" >-> Var "x")
+        , [Loop $ Lambda "x" (Var "x" >-> Var "x") >-> Lambda "x" (Var "x" >-> Var "x")]
         )
       , ( 10
-        , Lambda "x" (Var "x" <> Var "x" <> Var "x") <> Lambda "x" (Var "x" <> Var "x" <> Var "x")
-        , [Step $ Lambda "x" (Var "x" <> Var "x" <> Var "x") <> Lambda "x" (Var "x" <> Var "x" <> Var "x"), Error Complicated]
+        , Lambda "x" (Var "x" >-> Var "x" >-> Var "x") >-> Lambda "x" (Var "x" >-> Var "x" >-> Var "x")
+        , [Step $ Lambda "x" (Var "x" >-> Var "x" >-> Var "x") >-> Lambda "x" (Var "x" >-> Var "x" >-> Var "x"), Error Complicated]
         )
       ] $ \(maxSize, e, result) ->
         it ("returns " ++ show result ++ " when given " ++ show e) $ steps maxSize e `shouldBe` result
@@ -44,19 +44,19 @@ spec = do
     forM_
       [ (10, 10, Var "a", Result $ Var "a")
       , (10, 0, Var "a", Error Complicated)
-      , (10, 10, Lambda "x" (Var "x") <> Var "a", Result $ Var "a")
-      , (10, 1, Lambda "x" (Var "x") <> Var "a", Error Complicated)
-      , (10, 10, Lambda "x" (Var "x" <> Var "x") <> Lambda "x" (Var "x" <> Var "x"), Loop $ Lambda "x" (Var "x" <> Var "x") <> Lambda "x" (Var "x" <> Var "x"))
-      , (10, 10, Lambda "x" (Var "x" <> Var "x" <> Var "x") <> Lambda "x" (Var "x" <> Var "x" <> Var "x"), Error Complicated)
-      , (100, 2, Lambda "x" (Var "x" <> Var "x" <> Var "x") <> Lambda "x" (Var "x" <> Var "x" <> Var "x"), Error Complicated)
+      , (10, 10, Lambda "x" (Var "x") >-> Var "a", Result $ Var "a")
+      , (10, 1, Lambda "x" (Var "x") >-> Var "a", Error Complicated)
+      , (10, 10, Lambda "x" (Var "x" >-> Var "x") >-> Lambda "x" (Var "x" >-> Var "x"), Loop $ Lambda "x" (Var "x" >-> Var "x") >-> Lambda "x" (Var "x" >-> Var "x"))
+      , (10, 10, Lambda "x" (Var "x" >-> Var "x" >-> Var "x") >-> Lambda "x" (Var "x" >-> Var "x" >-> Var "x"), Error Complicated)
+      , (100, 2, Lambda "x" (Var "x" >-> Var "x" >-> Var "x") >-> Lambda "x" (Var "x" >-> Var "x" >-> Var "x"), Error Complicated)
       ] $ \(maxSteps, maxSize, e, result) ->
         it ("returns " ++ show result ++ " when given " ++ show e) $ runLambda maxSteps maxSize e `shouldBe` result
 
   describe "runLambdaWithTimeLimit" $ do
     forM_
       [ (1000000, 10, 10, Var "a", Result $ Var "a")
-      , (1000000, 10000, 10000, Lambda "x" (Var "x" <> Var "x" <> Var "x") <> Lambda "x" (Var "x" <> Var "x" <> Var "x"), Error Complicated)
-      , (1, 10000, 10000, Lambda "x" (Var "x" <> Var "x" <> Var "x") <> Lambda "x" (Var "x" <> Var "x" <> Var "x"), Error TimeOut)
+      , (1000000, 10000, 10000, Lambda "x" (Var "x" >-> Var "x" >-> Var "x") >-> Lambda "x" (Var "x" >-> Var "x" >-> Var "x"), Error Complicated)
+      , (1, 10000, 10000, Lambda "x" (Var "x" >-> Var "x" >-> Var "x") >-> Lambda "x" (Var "x" >-> Var "x" >-> Var "x"), Error TimeOut)
       ] $ \(timeLimitInMicros, maxSteps, maxSize, e, result) -> do
         actualResult <- runIO $ runLambdaWithTimeLimit timeLimitInMicros maxSteps maxSize e
         it ("returns " ++ show result ++ " when given " ++ show e) $ actualResult `shouldBe` result

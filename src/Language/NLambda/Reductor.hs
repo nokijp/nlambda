@@ -15,7 +15,7 @@ reduce :: Lambda -> Maybe Lambda
 reduce (Var _)                  = Nothing
 reduce (Lambda s e)             = Lambda s <$> reduce e
 reduce (Apply (Lambda s e1) e2) = Just $ apply e1 s e2
-reduce (Apply e1 e2)            = ((<> e2) <$> reduce e1) <|> ((e1 <>) <$> reduce e2)
+reduce (Apply e1 e2)            = ((>-> e2) <$> reduce e1) <|> ((e1 >->) <$> reduce e2)
 
 -- evaluates alpha-equivalence between two lambda expressions
 alphaEquiv :: Lambda -> Lambda -> Bool
@@ -50,4 +50,4 @@ apply l@(Lambda s1 e1) s2 e2
   | otherwise =
     let s1' = newVariable (S.delete s1 (freeVariables e1) `S.union` freeVariables e2) s1
     in Lambda s1' $ apply (apply e1 s1 (Var s1')) s2 e2
-apply (Apply e1 e2) s e3 = apply e1 s e3 <> apply e2 s e3
+apply (Apply e1 e2) s e3 = apply e1 s e3 >-> apply e2 s e3

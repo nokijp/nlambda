@@ -1,13 +1,16 @@
 module Language.NLambda
-  ( Lambda(..)
-  , (<>)
+  ( Applicable(..)
+  , Lambda(..)
   , lambdaString
   ) where
 
-data Lambda = Var !String | Lambda !String Lambda | Apply Lambda Lambda deriving (Eq, Show)
+class Applicable a where
+  (>->) :: a -> a -> a
 
-(<>) :: Lambda -> Lambda -> Lambda
-(<>) = Apply
+instance Applicable Lambda where
+  (>->) = Apply
+
+data Lambda = Var !String | Lambda !String Lambda | Apply Lambda Lambda deriving (Eq, Show)
 
 -- converts a Lambda into a readable string
 lambdaString :: Lambda -> String

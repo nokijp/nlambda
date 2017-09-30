@@ -11,6 +11,7 @@ import Language.NLambda.Reductor
 
 import System.Timeout (timeout)
 import Data.List (unfoldr)
+import Data.Maybe (fromMaybe)
 
 data Step = Step Lambda | Result Lambda | Loop Lambda | Error InterpretError deriving (Show, Eq)
 data InterpretError = Complicated | TimeOut deriving (Show, Eq)
@@ -30,7 +31,7 @@ runLambda maxSteps maxSize e =
 runLambdaWithTimeLimit :: Int -> Int -> Int -> Lambda -> IO Step
 runLambdaWithTimeLimit timelimitInMicros maxSteps maxSize e = do
   stepsMaybe <- timeout timelimitInMicros $ return $! runLambda maxSteps maxSize e
-  return $ maybe (Error TimeOut) id stepsMaybe
+  return $ fromMaybe (Error TimeOut) stepsMaybe
 
 ----------------------------------------------------------------
 -- internal utilities
