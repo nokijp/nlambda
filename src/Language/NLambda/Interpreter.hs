@@ -26,7 +26,7 @@ runLambda maxSteps maxSize e =
     Step _ -> Error Complicated
     s      -> s
 
--- solces a lambda expression with a time limit
+-- solves a lambda expression with a time limit
 runLambdaWithTimeLimit :: Int -> Int -> Int -> Lambda -> IO Step
 runLambdaWithTimeLimit timelimitInMicros maxSteps maxSize e = do
   stepsMaybe <- timeout timelimitInMicros $ return $! runLambda maxSteps maxSize e

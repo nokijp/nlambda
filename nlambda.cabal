@@ -9,6 +9,7 @@ library
                      , Language.NLambda.Parser
                      , Language.NLambda.Reductor
                      , Language.NLambda.Interpreter
+                     , Language.NLambda.SKI
   build-depends:       base >= 4.7 && < 5
                      , containers == 0.5.*
                      , parsec == 3.*
@@ -23,6 +24,7 @@ test-suite nlambda-test
                      , Language.NLambda.ParserSpec
                      , Language.NLambda.ReductorSpec
                      , Language.NLambda.InterpreterSpec
+                     , Language.NLambda.SKISpec
   build-depends:       base >= 4.7 && < 5
                      , hspec == 2.*
                      , nlambda

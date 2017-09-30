@@ -1,6 +1,7 @@
 module Language.NLambda.Reductor
   ( alphaEquiv
   , reduce
+  , freeVariables
   ) where
 
 import Language.NLambda
@@ -23,15 +24,15 @@ alphaEquiv (Apply e1 e2)     (Apply e3 e4)     = (e1 `alphaEquiv` e3) && (e2 `al
 alphaEquiv l1@(Lambda s1 e1) l2@(Lambda s2 e2) = (freeVariables l1 == freeVariables l2) && (e1 `alphaEquiv` apply e2 s2 (Var s1))
 alphaEquiv _                 _                 = False
 
-----------------------------------------------------------------
--- internal utilities
-----------------------------------------------------------------
-
 -- returns free variables in an expression
 freeVariables :: Lambda -> S.Set String
 freeVariables (Var s)       = S.singleton s
 freeVariables (Lambda s e)  = S.delete s $ freeVariables e
 freeVariables (Apply e1 e2) = freeVariables e1 `S.union` freeVariables e2
+
+----------------------------------------------------------------
+-- internal utilities
+----------------------------------------------------------------
 
 -- generates a new variable name which is not duplicated with used ones
 newVariable :: S.Set String -> String -> String
