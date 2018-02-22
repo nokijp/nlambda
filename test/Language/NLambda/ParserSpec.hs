@@ -23,6 +23,8 @@ spec = do
       , ("a  b", Var "a" >-> Var "b")
       , (" a b", Var "a" >-> Var "b")
       , ("a b ", Var "a" >-> Var "b")
+      , ("a\nb", Var "a" >-> Var "b")
+      , ("a#b\nc", Var "a" >-> Var "c")
       , ("\\x.x", Lambda "x" (Var "x"))
       , ("\\x . x", Lambda "x" (Var "x"))
       , ("\\x -> x", Lambda "x" (Var "x"))
@@ -36,6 +38,12 @@ spec = do
       , ("a b c", Var "a" >-> Var "b" >-> Var "c")
       , ("a (b c)", Var "a" >-> (Var "b" >-> Var "c"))
       , ("a (b (c d))", Var "a" >-> (Var "b" >-> (Var "c" >-> Var "d")))
+      , ("let x = a in x", Lambda "x" (Var "x") >-> Var "a")
+      , ("let x = x in x", Lambda "x" (Var "x") >-> Var "x")
+      , ("let x = a in let y = b in c", Lambda "x" (Lambda "y" (Var "c") >-> Var "b") >-> Var "a")
+      , ("let x = a, y = b in c", Lambda "x" (Lambda "y" (Var "c") >-> Var "b") >-> Var "a")
+      , ("a let x = b in c d", Var "a" >-> (Lambda "x" (Var "c" >-> Var "d") >-> Var "b"))
+      , ("let x = let y = a in b in c", Lambda "x" (Var "c") >-> (Lambda "y" (Var "b") >-> Var "a"))
       ] $ \(s, e) ->
         it ("accepts " ++ s) $ parse (lambdaParser <* eof) "" s `shouldBe` Right e
 
