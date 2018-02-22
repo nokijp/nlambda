@@ -12,7 +12,7 @@ instance Applicable Lambda where
 
 data Lambda = Var !String | Lambda !String Lambda | Apply Lambda Lambda deriving (Eq, Show)
 
--- converts a Lambda into a readable string
+-- | converts a Lambda into a readable string
 lambdaString :: Lambda -> String
 lambdaString (Var s)       = s
 lambdaString (Lambda s e)  = flatLambdaString [s] e

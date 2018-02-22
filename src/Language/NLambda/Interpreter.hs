@@ -16,18 +16,18 @@ import Data.Maybe (fromMaybe)
 data Step = Step Lambda | Result Lambda | Loop Lambda | Error InterpretError deriving (Show, Eq)
 data InterpretError = Complicated | TimeOut deriving (Show, Eq)
 
--- returns the beta-reduction sequence
+-- | returns the beta-reduction sequence
 steps :: Int -> Lambda -> [Step]
 steps maxSize = unfoldr (step maxSize <$>) . Just
 
--- solves a lambda expression
+-- | solves a lambda expression
 runLambda :: Int -> Int -> Lambda -> Step
 runLambda maxSteps maxSize e =
   case last $ take maxSteps $ steps maxSize e of
     Step _ -> Error Complicated
     s      -> s
 
--- solves a lambda expression with a time limit
+-- | solves a lambda expression with a time limit
 runLambdaWithTimeLimit :: Int -> Int -> Int -> Lambda -> IO Step
 runLambdaWithTimeLimit timelimitInMicros maxSteps maxSize e = do
   stepsMaybe <- timeout timelimitInMicros $ return $! runLambda maxSteps maxSize e

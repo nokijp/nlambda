@@ -10,21 +10,21 @@ import Control.Applicative
 import qualified Data.List as L
 import qualified Data.Set as S
 
--- reduces a lambda expression step-by-step
+-- | reduces a lambda expression step-by-step
 reduce :: Lambda -> Maybe Lambda
 reduce (Var _)                  = Nothing
 reduce (Lambda s e)             = Lambda s <$> reduce e
 reduce (Apply (Lambda s e1) e2) = Just $ apply e1 s e2
 reduce (Apply e1 e2)            = ((>-> e2) <$> reduce e1) <|> ((e1 >->) <$> reduce e2)
 
--- evaluates alpha-equivalence between two lambda expressions
+-- | evaluates alpha-equivalence between two lambda expressions
 alphaEquiv :: Lambda -> Lambda -> Bool
 alphaEquiv (Var s1)          (Var s2)          = s1 == s2
 alphaEquiv (Apply e1 e2)     (Apply e3 e4)     = (e1 `alphaEquiv` e3) && (e2 `alphaEquiv` e4)
 alphaEquiv l1@(Lambda s1 e1) l2@(Lambda s2 e2) = (freeVariables l1 == freeVariables l2) && (e1 `alphaEquiv` apply e2 s2 (Var s1))
 alphaEquiv _                 _                 = False
 
--- returns free variables in an expression
+-- | returns free variables in an expression
 freeVariables :: Lambda -> S.Set String
 freeVariables (Var s)       = S.singleton s
 freeVariables (Lambda s e)  = S.delete s $ freeVariables e

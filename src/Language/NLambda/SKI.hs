@@ -17,7 +17,7 @@ data SKI = S | K | I | Var !String | Apply SKI SKI deriving (Eq, Show)
 instance L.Applicable SKI where
   (>->) = Apply
 
--- converts a SKI into a readable string
+-- | converts a SKI into a readable string
 skiString :: SKI -> String
 skiString (Var s) = s
 skiString (Apply e1 e2) = skiString e1 ++ " " ++ quote e2
@@ -28,7 +28,7 @@ skiString S = "S"
 skiString K = "K"
 skiString I = "I"
 
--- converts a SKI into a Lambda
+-- | converts a SKI into a Lambda
 skiToLambda :: SKI -> L.Lambda
 skiToLambda S = L.Lambda "x" $ L.Lambda "y" $ L.Lambda "z" $ L.Var "x" >-> L.Var "z" >-> (L.Var "y" >-> L.Var "z")
 skiToLambda K = L.Lambda "x" $ L.Lambda "y" $ L.Var "x"
@@ -36,7 +36,7 @@ skiToLambda I = L.Lambda "x" $ L.Var "x"
 skiToLambda (Var s) = L.Var s
 skiToLambda (Apply e1 e2) = skiToLambda e1 >-> skiToLambda e2
 
--- converts a Lambda into a SKI by the T[]-transformation
+-- | converts a Lambda into a SKI by the T[]-transformation
 lambdaToSki :: L.Lambda -> SKI
 lambdaToSki (L.Var s) = Var s
 lambdaToSki (L.Apply e1 e2) = lambdaToSki e1 >-> lambdaToSki e2
@@ -54,7 +54,7 @@ lambdaToSki (L.Lambda s1 l@(L.Lambda s2 e))
   | s1 `S.notMember` LR.freeVariables l = K >-> lambdaToSki l
   | otherwise = skiToSki s1 (lambdaToSki $ L.Lambda s2 e)
 
--- returns free variables in an expression
+-- | returns free variables in an expression
 freeVariables :: SKI -> S.Set String
 freeVariables (Var s) = S.singleton s
 freeVariables (Apply e1 e2) = freeVariables e1 `S.union` freeVariables e2

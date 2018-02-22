@@ -8,7 +8,7 @@ import Data.Char
 import Text.Parsec
 import Text.Parsec.String
 
--- parses a lambda expression
+-- | parses a lambda expression
 lambdaParser :: Parser Lambda
 lambdaParser = expression
 
